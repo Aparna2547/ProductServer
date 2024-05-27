@@ -3,6 +3,7 @@ import cors from "cors"
 import cookieParser from "cookie-parser"
 import mongoose  from "mongoose"
 import dotenv from "dotenv"
+import router from "./route/userRoute.js"
 
 dotenv.config()
 
@@ -14,6 +15,7 @@ const connectDb =async () =>{
     try {
         const uri = process.env.mongo_uri
         await mongoose.connect(uri)
+        console.log('db connected')
     } catch (error) {
         console.log(error);
     }
@@ -25,7 +27,7 @@ app.use(express.urlencoded({extended:true}))
 
 app.use(cookieParser())
 
-app.use('/api/user')
+app.use('/api/user',router)
 
 app.listen(port,()=>{
     console.log('server is running');
