@@ -33,6 +33,10 @@ const productSchema = new mongoose.Schema({
     variants: [variantSchema],
     images:{
         type:[String]
+    },
+    createdAt:{
+        type:Date,
+        default: Date.now
     }
 })
 

@@ -4,6 +4,8 @@ import SubCategory from "../Model/SubCategoryModel.js";
 import User from "../Model/userModel.js";
 import bcrypt from "bcrypt";
 import {saveToCloudinary} from '../utils/cloudinary.js'
+import jwt from 'jsonwebtoken'
+import Wishlist from "../Model/WishlistModel.js";
 
 export const signUp = async (req, res) => {
   try {
@@ -21,9 +23,16 @@ export const signUp = async (req, res) => {
           password: hashedPassword,
         });
         await newUser.save();
+        const token = jwt.sign(
+          { userId: userFound._id },
+          process.env.JWT_SECRET,
+          {
+            expiresIn: "1d",
+          }
+        );
         res.status(200).json({
           message: "User saved successfully",
-          token: true,
+          token,
         });
       }
     }
@@ -43,7 +52,14 @@ export const SignIn = async (req, res) => {
       const hashedPassword = userFound.password;
       const passwordMatch = await bcrypt.compare(password, hashedPassword);
       if (passwordMatch) {
-        res.status(201).json({ message: "Logined successfully", token: true });
+        const token = jwt.sign(
+          { userId: userFound._id },
+          process.env.JWT_SECRET,
+          {
+            expiresIn: "2d",
+          }
+        );
+        res.status(201).json({ message: "Logined successfully", token });
       }
     } else {
       res.status(401).json({ message: "Mobile not found . Please signup" });
@@ -175,6 +191,8 @@ export const editProduct = async (req,res) =>{
     
   } catch (error) {
     console.log(error);
+    res.status(401).json({message:"somethimg  error"})
+
   }
 }
 
@@ -188,5 +206,62 @@ export const subCategoryFilter = async (req,res)=>{
     return subCategoryFind
   } catch (error) {
     console.log(error);
+    res.status(401).json({message:"somethimg  error"})
+
+  }
+}
+
+export const addToWishlist = async (req,res)=>{
+  try {
+    let userId ;
+            const token = req.cookies.userJWT
+            if(token){
+                const decoded =  jwt.verify(token,process.env.JWT_KEY);
+                userId = decoded.id
+            }  
+            const productId = req.query.productId
+            console.log('hi',userId,productId);
+            const newWishlist = new Wishlist({
+              userId,
+              productId
+            }
+            )
+            await newWishlist.save()
+            res.status(201).json({message:"Added to wishlist"})
+        } catch (error) {
+    res.status(401).json({message:"somethimg  error"})
+    
+  }
+}
+
+
+export const showWishlist = async(req,res)=>{
+  try {
+    let userId ;
+    const token = req.cookies.userJWT
+    if(token){
+        const decoded =  jwt.verify(token,process.env.JWT_KEY);
+        userId = decoded.id
+    }  
+
+    const showItems = await Wishlist.find({userId}).populate('productId')
+    console.log('showItens',showItems)
+    return showItems
+  } catch (error) {
+    res.status(401).json({message:"somethimg  error"})
+    
+  }
+}
+export const logout= async (req,res)=>{
+  try {
+      res.cookie('userJWT', '', {
+          httpOnly: true,
+          expires: new Date(0)
+      })
+      res.status(200).json({success:true})
+      
+  } catch (error) {
+      console.log(error);
+      
   }
 }
