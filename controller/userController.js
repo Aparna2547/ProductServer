@@ -1,7 +1,9 @@
 import Category from "../Model/CategoryModel.js";
+import Product from "../Model/ProductModel.js";
 import SubCategory from "../Model/SubCategoryModel.js";
 import User from "../Model/userModel.js";
 import bcrypt from "bcrypt";
+import {saveToCloudinary} from '../utils/cloudinary.js'
 
 export const signUp = async (req, res) => {
   try {
@@ -117,3 +119,74 @@ export const showSubCategories = async (req, res) => {
         res.status(401).json({ message: "Error fetching categories" });
     }
 };
+
+export const addProduct = async (req,res)=>{
+  try {
+    const {productName,brandName,variants,subCategory,description} = req.body
+
+    const existingProduct = await Product.findOne({productName})
+    if(existingProduct){
+      res.status(401).json({message:"product already exist"})
+    }else{
+
+      const uploadImages = await Promise.all(
+        parlourData.banners.map(async (file)=>{
+            return await this.Cloudinary.saveToCloudinary(file)
+        })
+    );      
+    const newProduct  = new Product({
+        productName,
+        brandName,
+        subCategory,
+        description,
+        variants,
+        images:uploadImages
+      })
+      await newProduct.save()
+      res.status(200).json({message:"Product added"})
+    }
+  } catch (error) {
+    res.status(401).json({ message: "Error creating products categories" });
+  }
+}
+
+
+export const displayProduct = async (req,res) =>{
+  try {
+    const page =req.query.page
+    const search = req.query.search
+
+    let limit =5
+    let skip  = (page - 1)*limit;
+    const totalProduct = await Product.find({}).countDocuments()
+    let totalPages = Math.floor(totalProduct/limit)
+
+    const showProduct = await Product.find({
+      productName : {$regex : '^' + search, $options: "i" } ,
+    })
+    return {showProduct,totalPages}
+  } catch (error) {
+    res.status(401).json({message:"error"})
+  }
+}
+
+export const editProduct = async (req,res) =>{
+  try {
+    
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+export const subCategoryFilter = async (req,res)=>{
+  try {
+    let subCategorySelected = req.query.subCategory || "";
+    let subCategoryFind  = await SubCategory.find({ $in : subCategorySelected},{_id:1});
+    if(!subCategoryFind.length){
+      subCategoryFind = await SubCategory.find({},{_id:1})
+    }
+    return subCategoryFind
+  } catch (error) {
+    console.log(error);
+  }
+}
