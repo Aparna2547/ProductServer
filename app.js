@@ -15,7 +15,7 @@ const app = express()
 
 const connectDb =async () =>{
     try {
-        const uri = process.env.mongo_uri
+        const uri = 'mongodb+srv://aparna:aparnapie2547@cluster0.jtiouuj.mongodb.net/userManagement?retryWrites=true&w=majority'
         await mongoose.connect(uri)
         console.log('db connected')
     } catch (error) {
@@ -30,7 +30,7 @@ app.use(express.urlencoded({extended:true}))
 
 app.use(
     cors({
-        origin:'http://localhost:5173',
+        origin:'https://product-pi-woad.vercel.app',
         methods:'GET,HEAD,PUT,PATCH,POST,DELETE',
         credentials:true
     })
