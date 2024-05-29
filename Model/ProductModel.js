@@ -19,9 +19,6 @@ const productSchema = new mongoose.Schema({
     productName:{
         type:String,
     },
-    brandName:{
-        type:String
-    },
     subCategory:{
         type:mongoose.Types.ObjectId,
         ref:'SubCategory'
@@ -30,7 +27,7 @@ const productSchema = new mongoose.Schema({
         type:String
 
     },
-    variants: [variantSchema],
+    variants: [],
     images:{
         type:[String]
     },

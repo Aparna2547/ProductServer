@@ -1,8 +1,11 @@
 import mongoose, { mongo } from "mongoose"
 
 const userSchema = new mongoose.Schema({
-    mobile:{
-       type: Number,
+    name:{
+        type:String
+    },
+    email:{
+       type: String,
     required:true
     },
     password:{

@@ -1,8 +1,8 @@
 import { v2 as cloudinary } from 'cloudinary';
 cloudinary.config({
-    cloud_name: process.env.CLOUDINARY_CLOUD ,
-    api_key: process.env.CLOUDINARY_API_KEY,
-    api_secret: process.env.CLOUDINARY_API_SECRET
+    cloud_name: 'dr2avntwv' ,
+    api_key:'829874218365388',
+    api_secret: 'cZ_7TCeKD4mJf0Hj-CbfmvkXgks'
 });
 
 
@@ -16,4 +16,4 @@ const saveToCloudinary = async (file)=>{
     }
 }
 
-export default {saveToCloudinary}
+export default saveToCloudinary
