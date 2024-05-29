@@ -48,7 +48,7 @@ export const SignIn = async (req, res) => {
       if (passwordMatch) {
         const token = jwt.sign(
           { userId: userFound._id },
-          process.env.JWT_SECRET,
+          'jwt123',
           {
             expiresIn: "2d",
           }
@@ -281,7 +281,7 @@ export const removeFromWishlist = async(req,res)=>{
     const id = req.query.id
     const removeItem = await Wishlist.deleteOne({_id:id})
     console.log(removeItem)
-    res.status(200).json({message:"removed from wishlisyt"})
+    res.status(200).json({message:"removed from wishlist"})
   } catch (error) {
     console.log(error)
   }
